@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -e
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+COMMIT_MSG=$(cat $1)
+ISSUE=$(echo $BRANCH | grep -Eo '[a-zA-z]+-\d+' | tr "[:lower:]" "[:upper:]")
+
+# Don't change the message commits to main or develop
+if [[ "$BRANCH" =~ ^(main|develop)$ ]]; then
+    exit 0
+fi
+
+# Don't change the message if we cannot identify the issue from the branch
+if [[ "$ISSUE" == "" ]]; then
+    exit 0
+fi
+
+# Don't change the message if we can identify the issue in the commit message
+if [[ "$COMMIT_MSG" == "[$ISSUE] "* ]]; then
+    exit 0
+fi
+
+# Prefix the commit message with the issue
+echo "[$ISSUE] $COMMIT_MSG" >$1

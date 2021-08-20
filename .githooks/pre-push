@@ -1,0 +1,15 @@
+
+#!/bin/sh
+
+set -e
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Allow pushes to branches named main, develop, named after a JIRA issue or prefixed with a JIRA issue and -
+if [[ "$BRANCH" =~ ^(main|develop|[a-zA-Z]+-[0-9]+(-.*)?)$ ]]; then
+  exit 0
+fi
+
+# Reject pushes to any other branch
+echo "Branch $BRANCH name does not match ^(main|develop|[A-Z]+-[0-9]+(-.*)?)$"
+exit 1

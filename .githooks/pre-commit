@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# DO NOT upper case the issue. Jira requires the case to be exact
+ISSUE=$(echo $BRANCH | grep -Eo '[a-zA-z]+-\d+')
+
+# Allow commits to branches named main or develop
+
+if [[ "$BRANCH" =~ ^(main|develop)$ ]]; then
+    exit 0
+fi
+
+# Block the commit if we could not identify the issue in the branch name
+if [[ "$ISSUE" == "" ]]; then
+    echo "Failed. Issue not found in branch name."
+    exit 1
+fi
